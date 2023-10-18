@@ -1,4 +1,153 @@
-import { CLOSE_ICON, MESSAGE_ICON, styles } from "./assets.js";
+// import { CLOSE_ICON, MESSAGE_ICON, styles } from "./assets.js";
+
+export const styles = `
+    .widget__container * {
+        box-sizing: border-box;
+    }
+
+    h3, p, input {
+        margin: 0;
+        padding: 0;
+    }
+
+    .widget__container {
+        box-shadow: 0 0 18px 8px rgba(0, 0, 0, 0.1), 0 0 32px 32px rgba(0, 0, 0, 0.08);
+        width: 400px;
+        overflow: auto;
+        right: -25px;
+        bottom: 75px;
+        position: absolute;
+        transition: max-height .2s ease;
+        font-family: Helvetica, Arial ,sans-serif;
+        background-color: #e6e6e6a6;
+        border-radius: 10px;
+        box-sizing: border-box;
+        height: 70vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+    }
+
+    .widget__icon {
+        cursor: pointer;
+        width: 60%;
+        position: absolute;
+        top: 18px;
+        left: 16px;
+        transition: transform .3s ease;
+    }
+
+    .widget__hidden {
+        transform: scale(0);
+    }
+    .button__container {
+        border: none;
+        background-color: #0f172a;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .widget__container.hidden {
+        max-height: 0px;
+    }
+
+    .widget__header {
+        padding: 1rem 2rem 1.5rem;
+        background-color: #000;
+        color: #fff;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        text-align: center;
+    }
+
+    .widget__header h3 {
+        font-size: 24px;
+        font-weight: 400;
+        margin-bottom: 8px;
+    }
+
+    .form {
+        padding: 2rem 1rem 1.5rem;
+    }
+
+    .form .query_field {
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .query_field label {
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .query_field input,
+    .query_field textarea {
+        border: 1px solid #000000ad;
+        border-radius: 3px;
+        padding: 8px 10px;
+        background-color: #fff;
+        width: 100%;
+    }
+
+    .query_field input {
+        height: 48px;
+    }
+
+    .query_field textarea::placeholder {
+        font-family: Helvetica, Arial ,sans-serif;
+    }
+
+    .send_button {
+        height: 48px;
+        border-radius: 6px;
+        font-size: 18px;
+        background-color: #000;
+        color: #fff;
+        border: 0;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .send_button:hover {
+        background-color: rgba(0, 0, 0, 95%);
+    }
+    .message_container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+    .msg-box {
+        width: 70%;
+        border: solid;
+        border-radius: 10px;
+        padding: 5px;
+        margin: 10px 5px;
+    }
+    .user-msg {
+        align-self: end;
+    }
+`;
+
+export const MESSAGE_ICON = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#FFFFFF"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+        <polyline points="22,6 12,13 2,6"></polyline>
+    </svg>
+`;
+
+export const CLOSE_ICON = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="#FFFFFF" stroke="#FFFFFF"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+`;
+
 
 class MessageWidget {
   constructor(position = "bottom-right") {
@@ -11,6 +160,8 @@ class MessageWidget {
   position = "";
   open = false;
   widgetContainer = null;
+  BASE_URL = 'http://127.0.0.1:8000/twillio'; // Replace with your base URL
+  characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
   getPosition(position) {
     const [vertical, horizontal] = position.split("-");
@@ -20,7 +171,48 @@ class MessageWidget {
     };
   }
 
+  generateString(length) {
+      let result = ' ';
+      const charactersLength = characters.length;
+      for ( let i = 0; i < length; i++ ) {
+          result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+      return result;
+  }
+
+  streamChat(evt) {
+    const query_field = document.getElementById('query_input')
+    const message_container = document.getElementsByClassName('message_container')[0]
+    console.log(query_field.value)
+    let user_div = document.createElement("div");
+    let msg = query_field.value
+    user_div.className = 'msg-box user-msg'
+    user_div.innerHTML = msg
+    message_container.appendChild(user_div)
+    query_field.value = ""
+    let bot_div = document.createElement("div");
+    bot_div.className = 'msg-box bot-msg'
+
+
+    const eventSource = new EventSource(`${this.BASE_URL}/stream/?body=${msg}`);
+    console.info("Listenting on SEE", eventSource);
+    eventSource.onmessage = (event) => {
+        console.log(event['data'])
+        console.log("===============")
+        bot_div.innerHTML += event['data']
+        message_container.appendChild(bot_div)
+    };
+
+    eventSource.onerror = (error) => {
+        console.log(error)
+        eventSource.close()
+    }
+    query_field.setAttribute('value', '')
+  }
+
   async initialize() {
+    console.log("Project ID")
+    console.log(import.meta.url.split('=')[1])
     /**
      * Create and append a div element to the document body
      */
@@ -76,6 +268,9 @@ class MessageWidget {
      */
     container.appendChild(this.widgetContainer);
     container.appendChild(buttonContainer);
+
+    let send_button = document.getElementsByClassName('send_button')[0]
+    send_button.addEventListener("click", this.streamChat.bind(this))
   }
 
   createWidgetContent() {
@@ -85,49 +280,20 @@ class MessageWidget {
             <p>We usually respond within a few hours</p>
         </header>
 
-        <form>
-            <div class="form__field">
-                <label for="name">Name</label>
+        <div class='message_container'></div>
+
+        <div class='form'>
+            <div class="query_field">
                 <input
                 type="text"
-                id="name"
+                id="query_input"
                 name="name"
-                placeholder="Enter your name"
+                placeholder="Enter your query"
                 />
             </div>
 
-            <div class="form__field">
-                <label for="email">Email</label>
-                <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Enter your email"
-                />
-            </div>
-
-            <div class="form__field">
-                <label for="subject">Subject</label>
-                <input
-                type="text"
-                id="subject"
-                name="subject"
-                placeholder="Enter Message Subject"
-                />
-            </div>
-
-            <div class="form__field">
-                <label for="message">Message</label>
-                <textarea
-                id="message"
-                name="message"
-                placeholder="Enter your message"
-                rows="6"
-                ></textarea>
-            </div>
-
-            <button>Send Message</button>
-        </form>
+            <button class='send_button'>Send Message</button>
+        </div>
     `;
   }
 

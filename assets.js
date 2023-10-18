@@ -1,7 +1,7 @@
 export const styles = `
     .widget__container * {
         box-sizing: border-box;
-    }        
+    }
 
     h3, p, input {
         margin: 0;
@@ -20,6 +20,10 @@ export const styles = `
         background-color: #e6e6e6a6;
         border-radius: 10px;
         box-sizing: border-box;
+        height: 70vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
     }
 
     .widget__icon {
@@ -62,38 +66,39 @@ export const styles = `
         margin-bottom: 8px;
     }
 
-    form {
+    .form {
         padding: 2rem 1rem 1.5rem;
     }
 
-    form .form__field {
+    .form .query_field {
         margin-bottom: 1.5rem;
         display: flex;
         flex-direction: column;
     }
 
-    .form__field label {
+    .query_field label {
         margin-bottom: 8px;
         font-size: 14px;
     }
 
-    .form__field input,
-    .form__field textarea {
+    .query_field input,
+    .query_field textarea {
         border: 1px solid #000000ad;
         border-radius: 3px;
         padding: 8px 10px;
         background-color: #fff;
+        width: 100%;
     }
 
-    .form__field input {
+    .query_field input {
         height: 48px;
     }
 
-    .form__field textarea::placeholder {
+    .query_field textarea::placeholder {
         font-family: Helvetica, Arial ,sans-serif;
     }
 
-    form button {
+    .send_button {
         height: 48px;
         border-radius: 6px;
         font-size: 18px;
@@ -104,8 +109,24 @@ export const styles = `
         cursor: pointer;
     }
 
-    form button:hover {
+    .send_button:hover {
         background-color: rgba(0, 0, 0, 95%);
+    }
+    .message_container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        overflow-y: auto;
+    }
+    .msg-box {
+        width: 70%;
+        border: solid;
+        border-radius: 10px;
+        padding: 5px;
+        margin: 10px 5px;
+    }
+    .user-msg {
+        align-self: end;
     }
 `;
 
