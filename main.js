@@ -19,7 +19,7 @@ const styles = `
         position: absolute;
         transition: max-height .2s ease;
         font-family: Helvetica, Arial ,sans-serif;
-        background-color: #e6e6e6a6;
+        background-color: #e6e6e6;
         border-radius: 10px;
         box-sizing: border-box;
         height: 70vh;
