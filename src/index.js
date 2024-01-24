@@ -110,7 +110,7 @@ class MessageWidget {
     );
 
     const iframe = document.createElement("iframe");
-    iframe.src = "https://chat-widget-jade.vercel.app/test"
+    iframe.src = "https://chat-widget-jade.vercel.app/1dd15704-b858-4f4e-ab00-32d10e31966f"
     iframe.id = "myFrame"
     iframe.style.border = "none"
     // iframe.addEventListener("load", () => {
