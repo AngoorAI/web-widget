@@ -19,5 +19,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "iframe-resizer": "^4.3.9"
+  }
 }
